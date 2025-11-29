@@ -139,7 +139,8 @@ cd projects/ecommerce-dbt
 
 ### Software Engineering
 - Modular architecture
-- Code reusability
+- Code reusability (OOP Design Patterns)
+- Resilience patterns (DLQ, Retries)
 - Configuration management
 - Testing and validation
 

@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: Order facts
+    columns:
+      - name: order_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: amount
+        tests:
+          - not_null
+
+  - name: fct_page_views
+    description: Page view facts
+    columns:
+      - name: view_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id

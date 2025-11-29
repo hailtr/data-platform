@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: User dimension
+    columns:
+      - name: user_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_products
+    description: Product dimension
+    columns:
+      - name: product_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null

@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: Staged order data
+    columns:
+      - name: order_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['new', 'processing', 'completed', 'cancelled', 'refunded']
+
+  - name: stg_users
+    description: Staged user data
+    columns:
+      - name: user_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_products
+    description: Staged product data
+    columns:
+      - name: product_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: price
+        tests:
+          - not_null
+
+  - name: stg_page_views
+    description: Staged page view data
+    columns:
+      - name: view_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+
+  - name: stg_inventory_changes
+    description: Staged inventory change data
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+      - name: stock_change
+        tests:
+          - not_null
