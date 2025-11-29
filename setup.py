@@ -1,4 +1,5 @@
 """Setup configuration for ecommerce-data-platform"""
+
 from setuptools import setup, find_packages
 
 setup(
@@ -7,4 +8,3 @@ setup(
     packages=find_packages(),
     python_requires=">=3.9",
 )
-

@@ -1,5 +1,4 @@
 import sys
-import os
 from pathlib import Path
 import pytest
 from unittest.mock import MagicMock, patch
@@ -11,6 +10,7 @@ ECOMMERCE_PATH = PROJECT_ROOT / "projects" / "ecommerce-dbt"
 
 sys.path.insert(0, str(FOUNDATION_PATH))
 sys.path.insert(0, str(ECOMMERCE_PATH))
+
 
 @pytest.fixture
 def mock_settings():
@@ -25,6 +25,7 @@ def mock_settings():
         mock.POSTGRES_DB = "test_db"
         yield mock
 
+
 @pytest.fixture
 def mock_db_connection():
     with patch("ingestion.kafka_consumer.get_db_connection") as mock_ctx:
@@ -33,6 +34,7 @@ def mock_db_connection():
         mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
         mock_ctx.return_value.__enter__.return_value = mock_conn
         yield mock_conn, mock_cursor
+
 
 @pytest.fixture
 def mock_redpanda_consumer():

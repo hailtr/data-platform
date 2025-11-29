@@ -1,6 +1,7 @@
 """
 Check if Docker services are running and accessible
 """
+
 import sys
 import socket
 from pathlib import Path
@@ -11,18 +12,15 @@ foundation_path = project_root / "foundation"
 sys.path.insert(0, str(foundation_path))
 sys.path.insert(0, str(project_root))
 
-from shared.config import settings
+from shared.config import settings  # noqa: E402
 
 
 def check_docker_running():
     """Check if Docker Desktop is running"""
     try:
         import subprocess
-        result = subprocess.run(
-            ['docker', 'info'],
-            capture_output=True,
-            timeout=5
-        )
+
+        result = subprocess.run(["docker", "info"], capture_output=True, timeout=5)
         return result.returncode == 0
     except (FileNotFoundError, subprocess.TimeoutExpired):
         return False
@@ -54,7 +52,7 @@ def check_redis():
 
 def check_redpanda():
     """Check if Redpanda is accessible"""
-    host, port = settings.KAFKA_BOOTSTRAP_SERVERS.split(':')
+    host, port = settings.KAFKA_BOOTSTRAP_SERVERS.split(":")
     return check_port_open(host, int(port))
 
 
@@ -64,7 +62,7 @@ def main():
     print("SERVICE HEALTH CHECK")
     print("=" * 60)
     print()
-    
+
     # Check Docker
     print("Checking Docker...")
     docker_running = check_docker_running()
@@ -78,21 +76,26 @@ def main():
         print("    2. Run: docker-compose up -d")
         print()
         return False
-    
+
     print()
-    
+
     # Check services
     all_ok = True
-    
+
     print("Checking PostgreSQL...")
     if check_postgres():
-        print(f"  [OK] PostgreSQL is accessible at {settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}")
+        print(
+            f"  [OK] PostgreSQL is accessible at {settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}"
+        )
     else:
-        print(f"  [ERROR] PostgreSQL is not accessible at {settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}")
+        print(
+            f"  [ERROR] PostgreSQL is not accessible at "
+            f"{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}"
+        )
         print("    - Container may not be running")
         print("    - Run: docker-compose up -d postgres")
         all_ok = False
-    
+
     print()
     print("Checking Redis...")
     if check_redis():
@@ -102,7 +105,7 @@ def main():
         print("    - Container may not be running")
         print("    - Run: docker-compose up -d redis")
         # Redis is optional, so don't fail
-    
+
     print()
     print("Checking Redpanda...")
     if check_redpanda():
@@ -112,7 +115,7 @@ def main():
         print("    - Container may not be running")
         print("    - Run: docker-compose up -d redpanda")
         all_ok = False
-    
+
     print()
     print("=" * 60)
     if all_ok:
@@ -129,4 +132,3 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
-

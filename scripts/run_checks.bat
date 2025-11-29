@@ -4,16 +4,17 @@ echo Running Local Quality Checks
 echo ==========================================
 
 echo.
+echo.
 echo [1/3] Running Black (Code Formatting)...
-black --check .
+venv\Scripts\black --check .
 if %errorlevel% neq 0 (
-    echo [ERROR] Black failed. Run 'black .' to fix formatting.
+    echo [ERROR] Black failed. Run 'venv\Scripts\black .' to fix formatting.
     exit /b %errorlevel%
 )
 
 echo.
 echo [2/3] Running Flake8 (Linting)...
-flake8 .
+venv\Scripts\flake8 .
 if %errorlevel% neq 0 (
     echo [ERROR] Flake8 failed. Fix linting errors.
     exit /b %errorlevel%
@@ -21,7 +22,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo [3/3] Running Tests...
-pytest
+venv\Scripts\pytest
 if %errorlevel% neq 0 (
     echo [ERROR] Tests failed.
     exit /b %errorlevel%

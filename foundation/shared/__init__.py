@@ -5,4 +5,3 @@ Shared code for data platform
 - Utilities
 - Infrastructure helpers
 """
-
