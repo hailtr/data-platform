@@ -27,6 +27,7 @@ class EcommerceSettings(BaseSettings):
     KAFKA_TOPIC_ORDERS: str = "ecommerce_orders"
     KAFKA_TOPIC_PAGE_VIEWS: str = "ecommerce_page_views"
     KAFKA_TOPIC_INVENTORY: str = "ecommerce_inventory"
+    KAFKA_TOPIC_DLQ: str = "ecommerce_dlq"
     
     # DuckDB (Data Warehouse)
     DUCKDB_PATH: str = "data/ecommerce_warehouse.duckdb"

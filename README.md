@@ -154,6 +154,27 @@ cd projects/ecommerce-dbt
 
 ---
 
+## Local Development
+
+### Quality Checks
+Run the following script before pushing changes to ensure code quality:
+```bash
+scripts/run_checks.bat
+```
+This will run Black (formatting), Flake8 (linting), and Pytest (tests).
+
+### Pre-commit Hook (Optional)
+To automate this, you can create a git pre-commit hook:
+1. Create `.git/hooks/pre-commit`
+2. Add:
+   ```bash
+   #!/bin/sh
+   ./scripts/run_checks.bat
+   ```
+3. Make it executable (`chmod +x .git/hooks/pre-commit`)
+
+---
+
 ## Contributing
 
 This is a portfolio project. Each project is self-contained and can be run independently.
