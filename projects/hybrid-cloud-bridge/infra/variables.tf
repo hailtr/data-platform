@@ -1,21 +1,20 @@
 variable "project_id" {
-  description = "GCP Project ID"
+  description = "Add the ID of the project where you want to deploy the bridge"
   type        = string
 }
 
 variable "region" {
-  description = "GCP Region"
+  description = "Add the region where you want to deploy the bridge"
   type        = string
   default     = "us-central1"
 }
 
 variable "bucket_name" {
-  description = "GCS Bucket Name"
+  description = "Add the name of the bucket where you want to store the raw data"
   type        = string
 }
 
 variable "bq_dataset_id" {
-  description = "BigQuery Dataset ID"
+  description = "Add the name of the BigQuery dataset where you want to store the analytics data"
   type        = string
-  default     = "analytics_raw"
 }
