@@ -1,0 +1,6 @@
+kafka-python
+pandas
+pyarrow
+google-cloud-storage
+pydantic-settings
+loguru

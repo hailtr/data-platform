@@ -1,77 +1,87 @@
 # Data Platform Portfolio
 
-**Multi-Project Data Engineering Portfolio**
+**Multi-Project Data Engineering Portfolio** by Rafael Ortiz
 
-A collection of focused data engineering projects built on a shared infrastructure foundation, demonstrating real-world data platform patterns and analytics tools.
+A production-ready data engineering portfolio showcasing real-world data platform patterns, built on a shared infrastructure foundation with fully-functional end-to-end projects.
 
 ---
 
-## Portfolio Structure
+## 🎯 Portfolio Structure
 
 ```
-data-platform-portfolio/
-├── foundation/              # Shared infrastructure (Docker, services)
+data-platform/
+├── foundation/              # Shared infrastructure (Docker services)
 │   ├── docker-compose.yml   # PostgreSQL, Redpanda, Redis
-│   └── shared/             # Reusable code (messaging, database, models)
+│   └── shared/             # Reusable libraries (messaging, database, models)
 │
-└── projects/                # Focused projects
-    ├── ecommerce-dbt/       # E-commerce analytics with dbt
-    ├── iot-powerbi/         # IoT real-time dashboard (coming soon)
-    └── finance-tableau/     # Financial analytics pipeline (coming soon)
+├── projects/                # Self-contained data engineering projects
+│   ├── ecommerce-dbt/       # ✅ E-commerce analytics with dbt (COMPLETE)
+│   ├── iot-powerbi/         # 🔜 IoT real-time dashboard (planned)
+│   └── finance-tableau/     # 🔜 Financial analytics pipeline (planned)
+│
+├── scripts/                 # Utility scripts for testing and verification
+└── tests/                   # Integration tests
 ```
 
 ---
 
-## Foundation
+## 🏗️ Foundation
 
-**Shared Infrastructure** - Used by all projects
+**Shared Infrastructure** - Containerized services used by all projects
 
-- **PostgreSQL** - Data warehouse (port 5433)
-- **Redpanda** - Kafka-compatible message queue (port 19092)
-- **Redis** - Caching layer (port 6379)
-- **Redpanda Console** - Web UI for monitoring (http://localhost:8080)
+| Service | Purpose | Port | Web UI |
+|---------|---------|------|--------|
+| **PostgreSQL** | Data warehouse | 5433 | - |
+| **Redpanda** | Kafka-compatible streaming | 19092 | [Console](http://localhost:8080) |
+| **Redis** | Caching layer | 6379 | - |
 
+### Multi-Tenant Design
 Each project uses the same infrastructure with **namespace isolation**:
-- Different PostgreSQL databases per project
-- Prefixed Kafka topics per project
-- Prefixed Redis keys per project
+- ✅ Separate PostgreSQL databases per project
+- ✅ Prefixed Kafka topics per project (`ecommerce_*`, `iot_*`, etc.)
+- ✅ Prefixed Redis keys per project
 
-See [foundation/README.md](foundation/README.md) for details.
+📖 See [`foundation/README.md`](foundation/README.md) for architecture details.
 
 ---
 
-## Projects
+## 📊 Projects
 
-### 1. E-commerce Analytics with dbt
+### 1. ✅ E-commerce Analytics with dbt (COMPLETE)
 
-**Focus**: Data modeling, SQL transformations, dbt
+> **Focus**: Real-time event streaming, SQL transformations, dimensional modeling
 
-- Real-time e-commerce event streaming
-- Star schema data warehouse
-- dbt transformations for analytics
-- Business metrics and KPIs
+**What it demonstrates:**
+- ✅ Real-time e-commerce event streaming (orders, page views, inventory)
+- ✅ Kafka consumer pipelines with error handling (DLQ, retries)
+- ✅ Star schema data warehouse design
+- ✅ dbt transformations (staging → intermediate → marts)
+- ✅ Business metrics and KPIs (revenue, conversion, user behavior)
+- ✅ Integration testing with pytest
 
-**Tech Stack**: Redpanda, PostgreSQL, dbt, Python
+**Tech Stack**: Redpanda (Kafka), PostgreSQL, dbt, Python, Docker
 
-[View Project →](projects/ecommerce-dbt/README.md)
+**Status**: Fully functional end-to-end pipeline ready for demo
 
-### 2. IoT Real-time Dashboard (Coming Soon)
+📖 [View Project Details →](projects/ecommerce-dbt/README.md)
 
-**Focus**: Real-time streaming, Power BI dashboards
+### 2. 🔜 IoT Real-time Dashboard (Planned)
+
+> **Focus**: Real-time streaming analytics, Power BI dashboards
 
 - IoT sensor data streaming
-- Real-time analytics
-- Power BI visualizations
-- Live monitoring dashboards
+- Real-time analytics and aggregations
+- Power BI live visualizations
+- Monitoring dashboards
 
 **Tech Stack**: Redpanda, PostgreSQL, Power BI, Python
 
-### 3. Financial Analytics Pipeline (Coming Soon)
+### 3. 🔜 Financial Analytics Pipeline (Planned)
 
-**Focus**: Batch processing, Tableau visualizations
+> **Focus**: Batch ETL processing, Tableau visualizations
 
 - Financial transaction processing
-- Batch ETL pipelines
+- Batch ETL pipelines with SCD Type 2
 - Tableau dashboards
 - Regulatory reporting
 
@@ -79,22 +89,48 @@ See [foundation/README.md](foundation/README.md) for details.
 
 ---
 
-## Quick Start
+## 🚀 Quick Start (5 minutes)
 
-### 1. Start Foundation Infrastructure
+### Prerequisites
+- Docker Desktop installed and running
+- Python 3.10+ with venv
+- Git
+
+### Start the E-commerce Analytics Demo
 
 ```bash
+# 1. Clone the repository
+git clone <your-repo-url>
+cd data-platform
+
+# 2. Start infrastructure (PostgreSQL, Redpanda, Redis)
 cd foundation
 docker-compose up -d
+cd ..
+
+# 3. Set up Python environment
+python -m venv venv
+venv\Scripts\activate  # On Windows
+source venv/bin/activate  # On macOS/Linux
+pip install -r requirements.txt
+
+# 4. Initialize the database
+python scripts\init_database.py
+
+# 5. Run the quality checks (optional)
+scripts\run_checks.bat
 ```
 
-### 2. Run a Project
+🎉 **That's it!** Your data platform is ready. See the [E-commerce project README](projects/ecommerce-dbt/README.md) for running the full demo.
 
-Each project has its own README with specific instructions. For example:
+### Quick Verification
 
 ```bash
-cd projects/ecommerce-dbt
-# Follow project-specific README
+# Check that all services are running
+python scripts\check_services.py
+
+# Access Redpanda Console
+start http://localhost:8080
 ```
 
 ---
@@ -155,24 +191,43 @@ cd projects/ecommerce-dbt
 
 ---
 
-## Local Development
+## 🛠️ Development & Quality
 
 ### Quality Checks
-Run the following script before pushing changes to ensure code quality:
-```bash
-scripts/run_checks.bat
-```
-This will run Black (formatting), Flake8 (linting), and Pytest (tests).
 
-### Pre-commit Hook (Optional)
-To automate this, you can create a git pre-commit hook:
-1. Create `.git/hooks/pre-commit`
-2. Add:
-   ```bash
-   #!/bin/sh
-   ./scripts/run_checks.bat
-   ```
-3. Make it executable (`chmod +x .git/hooks/pre-commit`)
+Run comprehensive checks before committing:
+
+```bash
+# Windows
+scripts\run_checks.bat
+
+# macOS/Linux
+chmod +x scripts/run_checks.sh && ./scripts/run_checks.sh
+```
+
+**What it tests:**
+- ✅ **Black**: Code formatting
+- ✅ **Flake8**: Linting and style
+- ✅ **Pytest**: Unit and integration tests
+
+### Pre-commit Hook (Recommended)
+
+Automate quality checks on every commit:
+
+```bash
+# Windows (PowerShell)
+@"
+#!/bin/sh
+scripts/run_checks.bat
+"@ | Out-File -FilePath .git/hooks/pre-commit -Encoding ASCII
+
+# macOS/Linux
+cat > .git/hooks/pre-commit << 'EOF'
+#!/bin/sh
+./scripts/run_checks.sh
+EOF
+chmod +x .git/hooks/pre-commit
+```
 
 ---
 

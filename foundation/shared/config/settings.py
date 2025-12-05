@@ -26,6 +26,15 @@ class Settings(BaseSettings):
     # Kafka/Redpanda
     KAFKA_BOOTSTRAP_SERVERS: str = "localhost:19092"
 
+    # GCS (Google Cloud Storage)
+    GCS_BUCKET_NAME: str = ""
+    GCS_PROJECT_ID: str = ""
+    GOOGLE_APPLICATION_CREDENTIALS: str = ""
+
+    # Batching
+    BATCH_SIZE: int = 5000
+    BATCH_TIMEOUT_SECONDS: int = 60
+
     # Application
     LOG_LEVEL: str = "INFO"
     ENVIRONMENT: str = "development"

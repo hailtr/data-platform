@@ -28,6 +28,10 @@ class RedpandaConsumer:
         group_id: str,
         bootstrap_servers: Optional[str] = None,
         auto_offset_reset: str = "earliest",
+        group_id: str,
+        bootstrap_servers: Optional[str] = None,
+        auto_offset_reset: str = "earliest",
+        enable_auto_commit: bool = True,
         settings: Optional["Settings"] = None,
     ):
         """
@@ -58,7 +62,8 @@ class RedpandaConsumer:
                 value_deserializer=lambda m: json.loads(m.decode("utf-8")),
                 key_deserializer=lambda k: k.decode("utf-8") if k else None,
                 auto_offset_reset=auto_offset_reset,
-                enable_auto_commit=True,
+                auto_offset_reset=auto_offset_reset,
+                enable_auto_commit=enable_auto_commit,
                 auto_commit_interval_ms=1000,
                 consumer_timeout_ms=1000,  # Timeout for polling
                 # Let Kafka auto-detect API version (Redpanda supports modern Kafka APIs)
@@ -153,6 +158,15 @@ class RedpandaConsumer:
             logger.info("Redpanda consumer closed")
         except Exception as e:
             logger.error(f"Error closing consumer: {e}")
+
+    def commit(self):
+        """Manually commit offsets (use when enable_auto_commit=False)"""
+        try:
+            self.consumer.commit()
+            logger.debug("Offsets committed")
+        except Exception as e:
+            logger.error(f"Failed to commit offsets: {e}")
+            raise
 
     def __enter__(self):
         """Context manager entry"""
