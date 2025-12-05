@@ -24,7 +24,7 @@ services:
       retries: 5
 
   bridge:
-    build: .
+    build: ./src
     container_name: bridge
     restart: unless-stopped
     depends_on:
@@ -38,5 +38,5 @@ services:
       - BATCH_TIMEOUT_SECONDS=${BATCH_TIMEOUT_SECONDS:-60}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
     volumes:
-      - ./service-account-key.json:/app/credentials.json:ro
+      - ./gcp_key.json:/app/credentials.json:ro
       - ../../foundation:/app/foundation:ro

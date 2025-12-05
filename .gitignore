@@ -34,8 +34,8 @@ ENV/
 *~
 
 # Environment variables
-.env
-.env.local
+**.env
+**.env.local
 
 # Data files
 data/
@@ -61,4 +61,14 @@ Thumbs.db
 # dbt
 target/
 dbt_packages/
+
+# secrets files
+**.json
+
+# terraform
+.terraform
+.terraform.lock.hcl
+
+# gitignore
+**.gitignore
 
