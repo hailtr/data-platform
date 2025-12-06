@@ -10,6 +10,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 # Foundation is mounted via docker-compose volume
 
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/app:/app/foundation
 
 CMD ["python", "-u", "src/bridge.py"]

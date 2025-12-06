@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:latest
@@ -24,7 +22,7 @@ services:
       retries: 5
 
   bridge:
-    build: ./src
+    build: .
     container_name: bridge
     restart: unless-stopped
     depends_on:
@@ -40,3 +38,11 @@ services:
     volumes:
       - ./gcp_key.json:/app/credentials.json:ro
       - ../../foundation:/app/foundation:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M

@@ -23,8 +23,7 @@ class BatchProcessor(ABC):
         """Add item to buffer. Returns True if flush was triggered."""
         self._buffer.append(item)
         if self._should_flush():
-            self.flush()
-            return True
+            return self.flush()
         return False
 
     def _should_flush(self) -> bool:

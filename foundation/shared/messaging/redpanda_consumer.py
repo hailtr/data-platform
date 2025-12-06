@@ -28,9 +28,6 @@ class RedpandaConsumer:
         group_id: str,
         bootstrap_servers: Optional[str] = None,
         auto_offset_reset: str = "earliest",
-        group_id: str,
-        bootstrap_servers: Optional[str] = None,
-        auto_offset_reset: str = "earliest",
         enable_auto_commit: bool = True,
         settings: Optional["Settings"] = None,
     ):
@@ -42,6 +39,7 @@ class RedpandaConsumer:
             group_id: Consumer group ID
             bootstrap_servers: Kafka bootstrap servers (overrides settings)
             auto_offset_reset: Where to start reading ('earliest' or 'latest')
+            enable_auto_commit: Whether to auto-commit offsets
             settings: Settings instance (defaults to shared.config.settings)
         """
         # Use provided settings or fallback to default
@@ -61,7 +59,6 @@ class RedpandaConsumer:
                 group_id=group_id,
                 value_deserializer=lambda m: json.loads(m.decode("utf-8")),
                 key_deserializer=lambda k: k.decode("utf-8") if k else None,
-                auto_offset_reset=auto_offset_reset,
                 auto_offset_reset=auto_offset_reset,
                 enable_auto_commit=enable_auto_commit,
                 auto_commit_interval_ms=1000,

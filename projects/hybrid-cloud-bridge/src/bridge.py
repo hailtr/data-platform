@@ -27,8 +27,9 @@ class BridgeSettings(Settings):
     BATCH_SIZE: int = 5000
     BATCH_TIMEOUT_SECONDS: int = 60
 
-    class Config:
-        env_file = ".env"
+    model_config = {
+        "env_file": ".env"
+    }
 
 
 class ParquetBatchProcessor(BatchProcessor):
@@ -44,6 +45,12 @@ class ParquetBatchProcessor(BatchProcessor):
     def _process_batch(self, batch: List[Any]) -> bool:
         """Convert batch to Parquet and upload to GCS"""
         df = pd.DataFrame(batch)
+        
+        # Enforce string types for IDs to prevent PyArrow conversion errors
+        # (e.g. if previous batches had ints and now we have UUID strings)
+        for col in ['event_id', 'session_id', 'user_id', 'country', 'action']:
+            if col in df.columns:
+                df[col] = df[col].astype(str)
 
         # Generate paths
         now = datetime.utcnow()
