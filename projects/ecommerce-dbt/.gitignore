@@ -1,7 +1,7 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 *.so
 .Python
 venv/
@@ -27,3 +27,6 @@ data/
 .DS_Store
 Thumbs.db
 
+profiles.yml
+dbt/profiles.yml
+gcp_key.json

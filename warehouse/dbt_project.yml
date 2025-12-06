@@ -1,0 +1,28 @@
+
+name: 'data_platform'
+version: '1.0.0'
+config-version: 2
+
+profile: 'data_platform_profile'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets: 
+  - "target"
+  - "dbt_packages"
+
+models:
+  data_platform:
+    # Config for standard layers
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: analytics

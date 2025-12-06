@@ -1,7 +1,7 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 *.so
 .Python
 build/
@@ -69,6 +69,17 @@ dbt_packages/
 .terraform
 .terraform.lock.hcl
 
-# gitignore
-**.gitignore
-
+# --- DBT SECURITY ---
+# Ignore all YAML files by default (Protects secrets/credentials)
+**/*.yml
+# Whitelist Critical Config Files (Safe to commit)
+!**/dbt_project.yml
+!**/packages.yml
+!**/selectors.yml
+# Whitelist Documentation and Schemas
+!warehouse/models/**/*.yml
+!warehouse/macros/**/*.yml
+!warehouse/seeds/**/*.yml
+!warehouse/snapshots/**/*.yml
+!warehouse/tests/**/*.yml
+!warehouse/analyses/**/*.yml
