@@ -1,0 +1,33 @@
+version: 2
+
+sources:
+  - name: bridge
+    database: data-platform-480317
+    schema: analytics 
+    loader: gcs_to_bq
+    
+    tables:
+      - name: events
+        description: "Raw events from the Hybrid Cloud Bridge, stored as Parquet in GCS"
+        external:
+          options:
+            format: PARQUET
+            uris: 
+              - "gs://bridge-raw-lake-v1/raw/*"
+        columns:
+          - name: event_id
+            data_type: STRING
+          - name: session_id
+            data_type: STRING
+          - name: user_id
+            data_type: INT64
+          - name: country
+            data_type: STRING
+          - name: device_type
+            data_type: STRING
+          - name: action
+            data_type: STRING
+          - name: value
+            data_type: FLOAT64
+          - name: timestamp
+            data_type: FLOAT64
