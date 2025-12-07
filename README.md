@@ -47,17 +47,22 @@ Each project uses the same infrastructure with **namespace isolation**:
 
 ## 📊 Projects
 
-### 1. ✅ E-commerce Analytics with dbt (COMPLETE)
-
-> **Focus**: Real-time event streaming, SQL transformations, dimensional modeling
+### 1. ✅ Hybrid Cloud Marketplace Platform (BigQuery + dbt)
+> **Focus**: Enterprise Data Warehouse, Advanced Analytics, Self-Healing Pipelines
 
 **What it demonstrates:**
-- ✅ Real-time e-commerce event streaming (orders, page views, inventory)
-- ✅ Kafka consumer pipelines with error handling (DLQ, retries)
-- ✅ Star schema data warehouse design
-- ✅ dbt transformations (staging → intermediate → marts)
-- ✅ Business metrics and KPIs (revenue, conversion, user behavior)
-- ✅ Integration testing with pytest
+- ✅ **Medallion Architecture**: Bronze (Ext), Silver (Staging), Gold (Marts).
+- ✅ **Self-Healing Data**: Automated backfill of corrupt country codes using Window Functions.
+- ✅ **Marketplace Analytics**: Integrated Revenue Model (Retail Sales + Ad Revenue).
+- ✅ **Advanced Logic**: 
+    - **Funnel Analysis**: Conversion rates (View -> Click -> Purchase).
+    - **Bot Detection**: Automated flagging of high-frequency sessions (>50 events/min).
+    - **Regional Pricing**: PPP adjustments for Tier 2 markets.
+
+**Tech Stack**: BigQuery, dbt, Python, GCS (Parquet)
+
+### 2. ✅ E-commerce Real-Time Stream (Local)
+> **Focus**: Real-time event streaming, SQL transformations
 
 **Tech Stack**: Redpanda (Kafka), PostgreSQL, dbt, Python, Docker
 
@@ -168,10 +173,11 @@ start http://localhost:8080
 - ETL/ELT patterns
 
 ### Analytics & BI
-- dbt data transformations
-- Power BI dashboards
-- Tableau visualizations
-- SQL analytics
+- **Enterprise Warehousing**: Google BigQuery, Partitioning, External Tables
+- **Advanced dbt**: Custom Macros, Incremental Models, Snapshotting
+- **Marketplace Analytics**: ROAS, Funnel Optimization, Bot Mitigation
+- **Visualization**: Power BI, Tableau, Looker Studio
+- **SQL Analytics**: Window Functions, Complex Joins, CTEs
 
 ### Software Engineering
 - Modular architecture

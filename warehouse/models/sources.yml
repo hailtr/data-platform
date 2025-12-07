@@ -31,3 +31,6 @@ sources:
             data_type: FLOAT64
           - name: timestamp
             data_type: FLOAT64
+          # Added Context for Phase 2
+          - name: context
+            data_type: STRUCT<referrer STRING, ad_id STRING, campaign_id STRING, url STRING>
