@@ -12,15 +12,56 @@ A production-ready data engineering portfolio showcasing real-world data platfor
 data-platform/
 ├── foundation/              # Shared infrastructure (Docker services)
 │   ├── docker-compose.yml   # PostgreSQL, Redpanda, Redis
-│   └── shared/             # Reusable libraries (messaging, database, models)
+│   └── shared/              # Reusable libraries (messaging, database, models)
+│
+├── warehouse/               # ✅ BigQuery + dbt Data Warehouse (COMPLETE)
+│   └── models/
+│       ├── staging/         # stg_events (country nullfix)
+│       ├── intermediate/    # int_events (bot detection, PPP pricing)
+│       └── marts/           # Analytics-ready tables
 │
 ├── projects/                # Self-contained data engineering projects
-│   ├── ecommerce-dbt/       # ✅ E-commerce analytics with dbt (COMPLETE)
-│   ├── iot-powerbi/         # 🔜 IoT real-time dashboard (planned)
-│   └── finance-tableau/     # 🔜 Financial analytics pipeline (planned)
+│   ├── ecommerce-dbt/       # ✅ Local Redpanda/PostgreSQL pipeline
+│   └── hybrid-cloud-bridge/ # ✅ GCP integration (BigQuery, Cloud Functions)
 │
 ├── scripts/                 # Utility scripts for testing and verification
-└── tests/                   # Integration tests
+└── tests/                   # Unit and integration tests
+```
+
+### High-Level Architecture
+
+```mermaid
+flowchart TB
+    subgraph Foundation["Foundation (Docker)"]
+        PG[(PostgreSQL<br/>:5433)]
+        RP[Redpanda<br/>:19092]
+        RD[(Redis<br/>:6379)]
+    end
+    
+    subgraph Projects
+        EC[E-commerce dbt]
+        HB[Hybrid Cloud Bridge]
+    end
+    
+    subgraph Cloud["GCP"]
+        BQ[(BigQuery)]
+        GCS[(GCS)]
+    end
+    
+    subgraph Warehouse["Warehouse (dbt)"]
+        STG[Staging]
+        INT[Intermediate]
+        MRT[Marts]
+    end
+    
+    EC --> RP
+    RP --> PG
+    HB --> BQ
+    HB --> GCS
+    GCS --> BQ
+    BQ --> STG
+    STG --> INT
+    INT --> MRT
 ```
 
 ---
@@ -45,32 +86,134 @@ Each project uses the same infrastructure with **namespace isolation**:
 
 ---
 
-## 📊 Projects
+## 📦 Warehouse (BigQuery + dbt)
 
-### 1. ✅ Hybrid Cloud Marketplace Platform (BigQuery + dbt)
 > **Focus**: Enterprise Data Warehouse, Advanced Analytics, Self-Healing Pipelines
 
-**What it demonstrates:**
-- ✅ **Medallion Architecture**: Bronze (Ext), Silver (Staging), Gold (Marts).
-- ✅ **Self-Healing Data**: Automated backfill of corrupt country codes using Window Functions.
-- ✅ **Marketplace Analytics**: Integrated Revenue Model (Retail Sales + Ad Revenue).
-- ✅ **Advanced Logic**: 
-    - **Funnel Analysis**: Conversion rates (View -> Click -> Purchase).
-    - **Bot Detection**: Automated flagging of high-frequency sessions (>50 events/min).
-    - **Regional Pricing**: PPP adjustments for Tier 2 markets.
+A production-grade dbt project designed for **Google BigQuery** implementing the Medallion Architecture.
 
-**Tech Stack**: BigQuery, dbt, Python, GCS (Parquet)
+### Data Model Layers
 
-### 2. ✅ E-commerce Real-Time Stream (Local)
+| Layer | Model | Purpose |
+|-------|-------|---------|
+| **Staging** | `stg_events` | Source normalization, NULL country → 'XX' |
+| **Intermediate** | `int_events` | Business logic: Bot detection, PPP pricing, country backfill |
+| **Marts** | `mart_funnel` | Conversion funnel: View → Click → Purchase |
+| | `mart_campaign_performance` | Revenue breakdown by campaign, device, country |
+| | `mart_session_stats` | Session-level metrics |
+
+### Key Features
+
+- **Self-Healing Data**: Automated backfill of corrupt country codes using Window Functions
+- **Bot Detection**: Automated flagging of high-frequency sessions (>50 events/session)
+- **Regional Pricing (PPP)**: Tier-based value adjustment (US/UK/DE/JP = 100%, BR/FR/CA = 50%, Others = 20%)
+- **Campaign Hierarchy**: Extraction of campaign category from ID (`cmp_US_blackfriday` → `Blackfriday`)
+- **Revenue Attribution**: Separate revenue streams for sales, clicks, and views
+
+### Data Lineage
+
+```mermaid
+flowchart LR
+    subgraph Bronze["Bronze"]
+        SRC[(events)]
+    end
+    
+    subgraph Silver["Silver"]
+        STG[stg_events]
+        INT[int_events]
+    end
+    
+    subgraph Gold["Gold"]
+        F1[mart_funnel]
+        F2[mart_campaign_performance]
+        F3[mart_session_stats]
+    end
+    
+    SRC --> STG
+    STG --> INT
+    INT --> F1
+    INT --> F2
+    INT --> F3
+    
+    STG -.-|"NULL → XX"| STG
+    INT -.-|"Bot Detection<br/>PPP Pricing"| INT
+```
+
+### Tech Stack
+BigQuery, dbt, Python, GCS (Parquet)
+
+---
+
+## 📊 Projects
+
+### 1. ✅ E-commerce Real-Time Stream (Local)
+
 > **Focus**: Real-time event streaming, SQL transformations
+
+**Architecture**:
+
+```mermaid
+flowchart LR
+    GEN["Data Generator<br/>(Python)"] --> RP["Redpanda<br/>ecommerce_*"]
+    RP --> ING["Ingestion<br/>(Kafka Consumer)"]
+    ING --> PG[(PostgreSQL)]
+    PG --> DBT[dbt]
+    DBT --> AN["Analytics<br/>Tables"]
+    
+    style GEN fill:#e1f5fe
+    style RP fill:#fff3e0
+    style PG fill:#e8f5e9
+    style DBT fill:#fce4ec
+```
+
+**Components**:
+- `data_generator/` - Synthetic e-commerce event generator
+- `ingestion/` - Kafka consumer → PostgreSQL pipeline
+- `storage/` - Database schemas and migrations
 
 **Tech Stack**: Redpanda (Kafka), PostgreSQL, dbt, Python, Docker
 
-**Status**: Fully functional end-to-end pipeline ready for demo
-
 📖 [View Project Details →](projects/ecommerce-dbt/README.md)
 
-### 2. 🔜 IoT Real-time Dashboard (Planned)
+---
+
+### 2. ✅ Hybrid Cloud Bridge (GCP Integration)
+
+> **Focus**: Cloud data pipeline, GCP services integration
+
+**Architecture**:
+
+```mermaid
+flowchart LR
+    subgraph Local["Local Dev"]
+        MOCK["Producer Mock<br/>(Docker)"]
+    end
+    
+    subgraph GCP["Google Cloud"]
+        GCS[(GCS Bucket)]
+        BQ[(BigQuery)]
+        CF[Cloud Functions]
+    end
+    
+    MOCK --> GCS
+    GCS --> BQ
+    CF --> BQ
+    
+    style GCP fill:#e3f2fd
+```
+
+**Components**:
+- Docker-based producer mock for local development
+- GCP integration infrastructure
+- BigQuery data ingestion
+
+**Tech Stack**: Docker, GCP (BigQuery, Cloud Functions), Python
+
+📖 See [`projects/hybrid-cloud-bridge/`](projects/hybrid-cloud-bridge/)
+
+---
+
+### 3. 🔜 IoT Real-time Dashboard (Planned)
 
 > **Focus**: Real-time streaming analytics, Power BI dashboards
 
@@ -81,7 +224,7 @@ Each project uses the same infrastructure with **namespace isolation**:
 
 **Tech Stack**: Redpanda, PostgreSQL, Power BI, Python
 
-### 3. 🔜 Financial Analytics Pipeline (Planned)
+### 4. 🔜 Financial Analytics Pipeline (Planned)
 
 > **Focus**: Batch ETL processing, Tableau visualizations
 
@@ -101,7 +244,7 @@ Each project uses the same infrastructure with **namespace isolation**:
 - Python 3.10+ with venv
 - Git
 
-### Start the E-commerce Analytics Demo
+### Start the Platform
 
 ```bash
 # 1. Clone the repository
@@ -126,7 +269,7 @@ python scripts\init_database.py
 scripts\run_checks.bat
 ```
 
-🎉 **That's it!** Your data platform is ready. See the [E-commerce project README](projects/ecommerce-dbt/README.md) for running the full demo.
+🎉 **That's it!** Your data platform is ready.
 
 ### Quick Verification
 
@@ -140,25 +283,7 @@ start http://localhost:8080
 
 ---
 
-## Why This Structure?
-
-### For Recruiters
-
-- **Clear Focus**: Each project demonstrates specific skills
-- **Easy to Navigate**: Understand each project in 2-5 minutes
-- **Shows Versatility**: Different tools, different domains
-- **Professional**: Intentional, well-organized
-
-### For Me
-
-- **Reusable Code**: Foundation used by all projects
-- **Easy to Maintain**: Update foundation once, all projects benefit
-- **Scalable**: Easy to add new projects
-- **Portfolio-Ready**: Each project tells a clear story
-
----
-
-## Skills Demonstrated
+## 💡 Skills Demonstrated
 
 ### Infrastructure & Architecture
 - Docker containerization
@@ -169,15 +294,15 @@ start http://localhost:8080
 ### Data Engineering
 - Real-time event streaming (Kafka/Redpanda)
 - Data ingestion pipelines
-- Data warehousing (PostgreSQL)
+- Data warehousing (PostgreSQL, BigQuery)
 - ETL/ELT patterns
 
 ### Analytics & BI
 - **Enterprise Warehousing**: Google BigQuery, Partitioning, External Tables
-- **Advanced dbt**: Custom Macros, Incremental Models, Snapshotting
-- **Marketplace Analytics**: ROAS, Funnel Optimization, Bot Mitigation
-- **Visualization**: Power BI, Tableau, Looker Studio
-- **SQL Analytics**: Window Functions, Complex Joins, CTEs
+- **Advanced dbt**: Custom Macros, Incremental Models, Window Functions
+- **Marketplace Analytics**: Funnel Optimization, Bot Detection, PPP Pricing
+- **SQL Analytics**: CTEs, Complex Joins, Aggregations
+- **Visualization**: Power BI, Tableau, Looker Studio (planned)
 
 ### Software Engineering
 - Modular architecture
@@ -185,15 +310,6 @@ start http://localhost:8080
 - Resilience patterns (DLQ, Retries)
 - Configuration management
 - Testing and validation
-
----
-
-## Getting Started
-
-1. **Clone the repository**
-2. **Start foundation**: `cd foundation && docker-compose up -d`
-3. **Choose a project**: Navigate to `projects/[project-name]`
-4. **Follow project README**: Each project has specific instructions
 
 ---
 
